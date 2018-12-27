@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+</head>
+<body>
+<p></p>
+<script>
+channel = "mang0";
+            twitch_key = "skdwfpqi57p0ernpbio8gnpuobf2wk9";
+            url = "https://api.twitch.tv/kraken/streams?client_id="+twitch_key+"&channel="+channel;
+
+
+
+            function submitSearch(e) {
+                pageNumber = 0;
+                fetchResults(e);
+            }
+            
+            function fetchResults(e) {
+                // Use preventDefault() to stop the form submitting
+                e.preventDefault();
+
+                // Assemble the full URL
+                url = baseURL + '?api-key=' + key + '&page=' + pageNumber + '&q=' + searchTerm.value + '&fq=document_type:("article")';
+
+                if(startDate.value !== '') {
+                    url += '&begin_date=' + startDate.value;
+                };
+
+                if(endDate.value !== '') {
+                    url += '&end_date=' + endDate.value;
+                };
+
+            }
+
+            function getData2() {
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.open("GET", url, false);
+                xmlHttp.send(null);
+                dics = JSON.parse(xmlHttp.response);
+                //currentStream = dics["_total"];
+                return dics;
+            }
+
+
+            function hydrate() {
+                if (getData2()["_total"] == 0){
+                    return channel+ " is not live! Be sure to drink 4oz of water per hour in the meantime!";
+                }
+                starttime = getData2()["streams"][0]["created_at"];
+                testst = Date.parse(starttime);
+                currtime = new Date().getTime();
+                timediff = currtime - testst;
+                hours = timediff / (1000*60*60);
+                // console.log(currtime);
+                // console.log(testst);
+                // console.log(hours);
+                return (channel + " has been live for over "+ hours + " hours! Which means you should have consumed " + hours*4 + "ounces of water!");
+            }
+$(document).ready(function(){
+    $("p").html(function(n){
+      return hydrate();
+    });
+});
+</script>
+
+
+</body>
+</html>
